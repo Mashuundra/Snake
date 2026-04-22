@@ -74,8 +74,8 @@ class GameEngine:
 
         # Находим все свободные клетки
         free_cells = []
-        for x in range(self._width):
-            for y in range(self._height):
+        for x in range(1, self._width - 1):
+            for y in range(1, self._height - 1):
                 if (x, y) not in occupied:
                     free_cells.append((x, y))
 
@@ -96,8 +96,8 @@ class GameEngine:
     def _check_wall_collision(self) -> bool:
         """Проверяет столкновение со стенами"""
         head_x, head_y = self._snake.head
-        return (head_x < 0 or head_x >= self._width or
-                head_y < 0 or head_y >= self._height)
+        return (head_x <= 0 or head_x >= self._width - 1 or
+                head_y <= 0 or head_y >= self._height - 1)
 
     def _check_food_collision(self) -> bool:
         """Проверяет, съела ли змейка еду"""
