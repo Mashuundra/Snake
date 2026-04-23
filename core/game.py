@@ -49,22 +49,18 @@ class GameEngine:
 
     @property
     def snake_body(self) -> list[tuple[int, int]]:
-        """Возвращает тело змейки"""
         return self._snake.body
 
     @property
     def food_position(self) -> Optional[Tuple[int, int]]:
-        """Возвращает позицию еды"""
         return self._food
 
     @property
     def score(self) -> int:
-        """Возвращает текущий счёт"""
         return self._score
 
     @property
     def status(self) -> GameStatus:
-        """Возвращает статус игры"""
         return self._status
 
     def _generate_food(self) -> None:
