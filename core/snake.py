@@ -35,20 +35,6 @@ class Snake:
         """Возвращает длину змейки"""
         return len(self._body)
 
-    def move(self) -> None:
-        """Перемещает змейку на один шаг в текущем направлении."""
-        self._direction = self._next_direction
-        dx, dy = self._direction
-        head_x, head_y = self.head
-        new_head = (head_x + dx, head_y + dy)
-
-        self._body.insert(0, new_head)
-
-        if self._grow_flag:
-            self._grow_flag = False
-        elif len(self._body) > 2:
-            self._body.pop()
-
     def set_direction(self, dx: int, dy: int) -> None:
         """Устанавливает новое направление движения змейки"""
         if not self._is_valid_direction(dx, dy):
@@ -82,3 +68,14 @@ class Snake:
     def check_self_collision(self) -> bool:
         """Проверяет, столкнулась ли голова змейки с её телом"""
         return self.head in self._body[1:]
+
+    def move_with_teleport(self, new_head: Tuple[int, int]) -> None:
+        """Перемещает змейку на новую позицию головы"""
+        self._direction = self._next_direction
+
+        self._body.insert(0, new_head)
+
+        if self._grow_flag:
+            self._grow_flag = False
+        elif len(self._body) > 2:
+            self._body.pop()

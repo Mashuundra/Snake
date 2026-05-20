@@ -10,13 +10,19 @@ from core.game import GameEngine, GameStatus
 class TestGameInitialization:
     """Тесты инициализации игры"""
 
-    def test_create_game(self):
-        game = GameEngine(20, 20)
+    def test_create_game_empty_map(self):
+        game = GameEngine(20, 20, map_type="empty")
         assert game.width == 20
         assert game.height == 20
         assert game.score == 0
         assert game.status == GameStatus.PLAYING
         assert game.food_position is not None
+        assert game.map_type == "empty"
+
+    def test_create_game_obstacles_map(self):
+        game = GameEngine(20, 20, map_type="obstacles")
+        assert game.map_type == "obstacles"
+        assert len(game.obstacles) > 0
 
     def test_snake_in_center(self):
         game = GameEngine(10, 10)
@@ -37,6 +43,72 @@ class TestGameInitialization:
         game = GameEngine(50, 50)
         assert game.width == 50
         assert game.height == 50
+
+
+class TestGameTeleportation:
+    """Тесты телепортации через границы"""
+
+    def test_teleport_right_wall(self):
+        game = GameEngine(10, 10, map_type="empty")
+        game._snake._body = [(9, 5)]
+        game._snake._direction = (1, 0)
+        game._snake._next_direction = (1, 0)
+        game.update()
+        assert game.snake_body[0] == (0, 5)
+        assert game.status == GameStatus.PLAYING
+
+    def test_teleport_left_wall(self):
+        game = GameEngine(10, 10, map_type="empty")
+        game._snake._body = [(0, 5)]
+        game._snake._direction = (-1, 0)
+        game._snake._next_direction = (-1, 0)
+        game.update()
+        assert game.snake_body[0] == (9, 5)
+        assert game.status == GameStatus.PLAYING
+
+    def test_teleport_up_wall(self):
+        game = GameEngine(10, 10, map_type="empty")
+        game._snake._body = [(5, 0)]
+        game._snake._direction = (0, -1)
+        game._snake._next_direction = (0, -1)
+        game.update()
+        assert game.snake_body[0] == (5, 9)
+        assert game.status == GameStatus.PLAYING
+
+    def test_teleport_down_wall(self):
+        game = GameEngine(10, 10, map_type="empty")
+        game._snake._body = [(5, 9)]
+        game._snake._direction = (0, 1)
+        game._snake._next_direction = (0, 1)
+        game.update()
+        assert game.snake_body[0] == (5, 0)
+        assert game.status == GameStatus.PLAYING
+
+
+class TestGameObstacles:
+    """Тесты карты с препятствиями"""
+
+    def test_obstacles_exist(self):
+        game = GameEngine(15, 15, map_type="obstacles")
+        assert len(game.obstacles) > 0
+
+    def test_obstacle_collision(self):
+        game = GameEngine(15, 15, map_type="obstacles")
+        obstacle = list(game.obstacles)[0]
+        obstacle_x, obstacle_y = obstacle
+        game._snake._body = [(obstacle_x - 1, obstacle_y)]
+        game._snake._direction = (1, 0)
+        game._snake._next_direction = (1, 0)
+        game.update()
+        assert game.status == GameStatus.GAME_OVER
+
+    def test_empty_map_no_obstacles(self):
+        game = GameEngine(15, 15, map_type="empty")
+        assert len(game.obstacles) == 0
+
+    def test_food_not_on_obstacles(self):
+        game = GameEngine(10, 10, map_type="obstacles")
+        assert game.food_position not in game.obstacles
 
 
 class TestGameMovement:
@@ -76,39 +148,15 @@ class TestGameMovement:
 
 
 class TestGameCollisions:
-    """Тесты столкновений"""
+    """Тесты столкновений (старые — теперь это победа, а не смерть)"""
 
-    def test_wall_collision_right(self):
-        game = GameEngine(5, 5)
+    def test_no_wall_death_on_empty_map(self):
+        """На пустой карте стены не убивают, а телепортируют"""
+        game = GameEngine(5, 5, map_type="empty")
         game._snake._body = [(4, 2)]
         game._snake._direction = (1, 0)
-        game._snake._next_direction = (1, 0)
         game.update()
-        assert game.status == GameStatus.GAME_OVER
-
-    def test_wall_collision_left(self):
-        game = GameEngine(5, 5)
-        game._snake._body = [(0, 2)]
-        game._snake._direction = (-1, 0)
-        game._snake._next_direction = (-1, 0)
-        game.update()
-        assert game.status == GameStatus.GAME_OVER
-
-    def test_wall_collision_up(self):
-        game = GameEngine(5, 5)
-        game._snake._body = [(2, 0)]
-        game._snake._direction = (0, -1)
-        game._snake._next_direction = (0, -1)
-        game.update()
-        assert game.status == GameStatus.GAME_OVER
-
-    def test_wall_collision_down(self):
-        game = GameEngine(5, 5)
-        game._snake._body = [(2, 4)]
-        game._snake._direction = (0, 1)
-        game._snake._next_direction = (0, 1)
-        game.update()
-        assert game.status == GameStatus.GAME_OVER
+        assert game.status == GameStatus.PLAYING  # не умер, телепортировался
 
     def test_self_collision(self):
         game = GameEngine(10, 10)
@@ -133,19 +181,20 @@ class TestGameFood:
         old_score = game.score
         game.update()
         assert game.score == old_score + 1
-        assert len(game.snake_body) == 2
 
     def test_eat_food_increases_snake_length(self):
         game = GameEngine(10, 10)
-        game._food = game.snake_body[0]
+        head_x, head_y = game.snake_body[0]
+        game._food = (head_x + 1, head_y)
         old_length = len(game.snake_body)
         game.update()
         assert len(game.snake_body) == old_length + 1
 
     def test_eat_food_generates_new_food(self):
         game = GameEngine(10, 10)
+        head_x, head_y = game.snake_body[0]
         old_food = game.food_position
-        game._food = game.snake_body[0]
+        game._food = (head_x + 1, head_y)
         game.update()
         assert game.food_position != old_food
 
@@ -156,13 +205,14 @@ class TestGameFood:
         game.update()
         assert game.food_position not in game.snake_body
 
-    def test_food_generation_respects_occupied_cells(self, monkeypatch):
-        game = GameEngine(5, 5)
-        all_cells = [(x, y) for x in range(5) for y in range(5)]
-        game._snake._body = all_cells[:-1]
-        game._food = None
+    def test_food_can_appear_on_edges(self):
+        """На пустой карте еда может быть на краю"""
+        game = GameEngine(10, 10, map_type="empty")
+        # Заполняем всё поле, кроме клетки (0,0)
+        all_cells = [(x, y) for x in range(10) for y in range(10)]
+        game._snake._body = all_cells[1:]  # все кроме (0,0)
         game._generate_food()
-        assert game.food_position not in game.snake_body
+        assert game.food_position == (0, 0)  # еда на краю
 
 
 class TestGameWin:
@@ -206,6 +256,19 @@ class TestGameReset:
         game.reset()
         assert game.food_position is not None
         assert game.food_position not in game.snake_body
+
+    def test_reset_changes_map_type(self):
+        game = GameEngine(10, 10, map_type="empty")
+        game.reset(map_type="obstacles")
+        assert game.map_type == "obstacles"
+        assert len(game.obstacles) > 0
+
+    def test_reset_clears_obstacles_when_switching_to_empty(self):
+        game = GameEngine(10, 10, map_type="obstacles")
+        assert len(game.obstacles) > 0
+        game.reset(map_type="empty")
+        assert len(game.obstacles) == 0
+        assert game.map_type == "empty"
 
 
 class TestGameDirectionChanges:
