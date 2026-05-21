@@ -1,3 +1,4 @@
+# core/snake.py
 """
 Модель змейки: движение, рост, проверка столкновений.
 """
@@ -17,7 +18,7 @@ class Snake:
 
     @property
     def body(self) -> List[Tuple[int, int]]:
-        """Возвращает копию тела змейки (для безопасного доступа извне)"""
+        """Возвращает копию тела змейки"""
         return self._body.copy()
 
     @property
@@ -37,29 +38,22 @@ class Snake:
 
     def set_direction(self, dx: int, dy: int) -> None:
         """Устанавливает новое направление движения змейки"""
-        if not self._is_valid_direction(dx, dy):
+        # Проверка допустимости направления
+        if dx not in (-1, 0, 1) or dy not in (-1, 0, 1):
+            return
+        if dx != 0 and dy != 0:
+            return
+        if dx == 0 and dy == 0:
             return
 
         new_dir = (dx, dy)
         current_dir = self._direction
 
+        # Запрет на разворот на 180 градусов
         if (new_dir[0] == -current_dir[0] and new_dir[1] == -current_dir[1]):
             return
 
         self._next_direction = new_dir
-
-    def _is_valid_direction(self, dx: int, dy: int) -> bool:
-        """Проверяет, является ли направление допустимым"""
-        if dx not in (-1, 0, 1) or dy not in (-1, 0, 1):
-            return False
-
-        if dx != 0 and dy != 0:
-            return False
-
-        if dx == 0 and dy == 0:
-            return False
-
-        return True
 
     def grow(self) -> None:
         """Увеличивает длину змейки"""
@@ -72,10 +66,9 @@ class Snake:
     def move_with_teleport(self, new_head: Tuple[int, int]) -> None:
         """Перемещает змейку на новую позицию головы"""
         self._direction = self._next_direction
-
         self._body.insert(0, new_head)
 
         if self._grow_flag:
             self._grow_flag = False
-        elif len(self._body) > 2:
+        else:
             self._body.pop()

@@ -3,3 +3,6 @@
 # Тестирование
 pytest==7.4.3
 pytest-cov==4.1.0
+
+# requirements.txt
+PyQt5>=5.15.0

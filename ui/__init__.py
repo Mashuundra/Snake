@@ -2,6 +2,7 @@
 ui package - графический интерфейс игры
 """
 
-from ui.renderer import GameRenderer, run_game
+from ui.game_widget import GameWidget
+from ui.main_window import MainWindow
 
-__all__ = ['GameRenderer', 'run_game']
+__all__ = ['GameWidget', 'MainWindow']

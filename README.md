@@ -35,6 +35,10 @@ snake_game/
 
 │ ├── init.py
 
+│ ├── game_window.py # Главное окно
+
+│ ├── main_window.py # Виджет игры
+
 │ └── renderer.py # Отрисовка поля, ввод пользователя
 
 ├── tests/ # Тесты

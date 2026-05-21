@@ -1,3 +1,4 @@
+# core/leaderboard.py
 """
 Таблица рекордов: сохранение и загрузка из JSON
 """
@@ -5,6 +6,7 @@
 import json
 import os
 from typing import List, Dict
+from datetime import datetime
 
 
 class Leaderboard:
@@ -31,23 +33,20 @@ class Leaderboard:
             json.dump({"records": self._records}, f, ensure_ascii=False, indent=2)
 
     def add_record(self, nickname: str, score: int, map_type: str) -> bool:
-        """Добавляет новый рекорд."""
+        """Добавляет новый рекорд"""
         record = {
             "nickname": nickname,
             "score": score,
-            "map_type": map_type
+            "map_type": map_type,
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         self._records.append(record)
-
-        # Сортируем по убыванию очков
         self._records.sort(key=lambda x: x["score"], reverse=True)
 
-        # Оставляем только топ-10
         if len(self._records) > 10:
             self._records = self._records[:10]
 
         self._save()
-
         return record in self._records
 
     def get_top_scores(self, limit: int = 10) -> List[Dict]:
@@ -58,5 +57,4 @@ class Leaderboard:
         """Проверяет, является ли счёт рекордным"""
         if len(self._records) < 10:
             return True
-
         return score > self._records[-1]["score"]
