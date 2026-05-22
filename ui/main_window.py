@@ -245,16 +245,15 @@ class MainWindow(QMainWindow):
             self.leaderboard.add_record(self.current_nickname, score, map_type)
             self.update_leaderboard_display()
 
-            QMessageBox.information(
-                self,
-                "Новый рекорд! 🎉",
-                f"Поздравляем, {self.current_nickname}!\n"
-                f"Ваш результат {score} очков вошёл в таблицу рекордов!"
-            )
-
     def keyPressEvent(self, event):
-        """Обработка глобальных клавиш"""
+        """Передаём все нажатия клавиш игровому виджету"""
+    # Сначала передаём игровому виджету
+        if self.game_widget:
+            self.game_widget.keyPressEvent(event)
+
+        # Обрабатываем глобальную клавишу N (новая игра)
         if event.key() == Qt.Key_N:
             self.show_start_dialog()
-        else:
-            super().keyPressEvent(event)
+
+        # Вызываем родительский метод
+        super().keyPressEvent(event)
