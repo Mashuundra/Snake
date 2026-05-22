@@ -1,6 +1,36 @@
 {
   "records": [
     {
+      "nickname": "Игрокgffg",
+      "score": 7,
+      "map_type": "empty",
+      "date": "2026-05-22 19:09:33"
+    },
+    {
+      "nickname": "Игрок",
+      "score": 5,
+      "map_type": "empty",
+      "date": "2026-05-22 18:55:09"
+    },
+    {
+      "nickname": "Иг",
+      "score": 4,
+      "map_type": "empty",
+      "date": "2026-05-22 18:55:53"
+    },
+    {
+      "nickname": "Игрок",
+      "score": 4,
+      "map_type": "obstacles",
+      "date": "2026-05-22 18:56:39"
+    },
+    {
+      "nickname": "Игрокfff",
+      "score": 4,
+      "map_type": "empty",
+      "date": "2026-05-22 19:02:10"
+    },
+    {
       "nickname": "l",
       "score": 0,
       "map_type": "obstacles",
@@ -29,36 +59,6 @@
       "score": 0,
       "map_type": "obstacles",
       "date": "2026-05-21 22:05:45"
-    },
-    {
-      "nickname": "l",
-      "score": 0,
-      "map_type": "obstacles",
-      "date": "2026-05-21 22:05:54"
-    },
-    {
-      "nickname": "alina",
-      "score": 0,
-      "map_type": "obstacles",
-      "date": "2026-05-21 22:08:31"
-    },
-    {
-      "nickname": "оавм",
-      "score": 0,
-      "map_type": "obstacles",
-      "date": "2026-05-21 22:09:38"
-    },
-    {
-      "nickname": "Игрок",
-      "score": 0,
-      "map_type": "obstacles",
-      "date": "2026-05-21 22:19:02"
-    },
-    {
-      "nickname": "Игрок",
-      "score": 0,
-      "map_type": "obstacles",
-      "date": "2026-05-21 22:19:25"
     }
   ]
 }
